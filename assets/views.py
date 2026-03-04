@@ -1,5 +1,7 @@
-from django.shortcuts import render
-from .models import Asset
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from .models import Asset, DeviceModel
+from .forms import AssetForm, DeviceModelForm
 # Create your views here.
 
 def asset_list(request):
@@ -24,3 +26,36 @@ def asset_list(request):
         'current_sort': sort_by
     }   
     return render(request, 'assets/asset_list.html', context)
+
+def asset_create(request):
+    if request.method == 'POST':
+        form = AssetForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('asset_list')
+    else:
+        form = AssetForm()
+    return render(request, 'assets/asset_form.html', {'form':form})
+
+def add_device_model_htmx(request):
+    if request.method == 'POST':
+        form = DeviceModelForm(request.POST)
+        if form.is_valid():
+            new_model = form.save()
+
+            models = DeviceModel.objects.all()
+
+            html = '<option value ="">---------</option>'
+            for m in models:
+                selected = 'selected' if m.id == new_model.id else ''
+                html += f'<option value="{m.id}" {selected}>{m.manufacturer} {m.name}</option>'
+            
+            response = HttpResponse(html)
+            response['HX-Trigger'] = 'closeModal'
+            return response
+    else:
+
+        form = DeviceModelForm()
+    return render(request, 'assets/partials/device_model_form.html', {'form': form})
+
+        
