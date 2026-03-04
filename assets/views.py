@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import Asset, DeviceModel
 from .forms import AssetForm, DeviceModelForm
@@ -58,4 +58,23 @@ def add_device_model_htmx(request):
         form = DeviceModelForm()
     return render(request, 'assets/partials/device_model_form.html', {'form': form})
 
-        
+def asset_update(request, pk):
+    asset = get_object_or_404(Asset, pk=pk)
+
+    if request.method == 'POST':
+        form = AssetForm(request.POST, instance=asset)
+        if form.is_valid():
+            form.save()
+            return redirect('asset_list')
+    else:
+        form = AssetForm(instance=asset)
+
+    return render(request, 'assets/asset_form.html', {'form': form, 'asset': asset})
+
+def asset_delete(request, pk):
+    asset = get_object_or_404(Asset, pk=pk)
+
+    if request.method == 'POST':
+        asset.delete()
+        return redirect('asset_list')
+    return render(request, 'assets/asset_confirm_delete.html', {'asset': asset})
