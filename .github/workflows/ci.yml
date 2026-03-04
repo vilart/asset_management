@@ -1,0 +1,33 @@
+name: Django CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. Checkout from repo
+      uses: actions/checkout@v4
+
+    - name: 2. Generating .env file
+      run: |
+        echo "SECRET_KEY=super-secret-test-key-123" > .env
+        echo "DEBUG=True" >> .env
+        echo "DB_NAME=postgres" >> .env
+        echo "DB_USER=postgres" >> .env
+        echo "DB_PASSWORD=postgres" >> .env
+        echo "DB_HOST=db" >> .env
+        echo "DB_PORT=5432" >> .env
+
+    - name: 3. Run docker compose for db and web images
+      run: docker compose up -d --build
+
+    - name: 4. Delay for postgres run
+      run: sleep 10
+
+    - name: 5. Running tests
+      run: docker compose exec -T web python manage.py test
