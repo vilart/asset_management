@@ -1,27 +1,45 @@
-#Lightweight python
-FROM python:3.12-slim
+# STAGE 1 : Builder
+FROM python:3.12-slim as builder
 
-#Python related env variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-#Base directory
 WORKDIR /app
 
-#Packages needed for postgresql
+# GCC and postgresql related libs
 RUN apt-get update \
     && apt-get install -y gcc libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-#Copy only requirements and forcing docker to cache packages before copying rest of the code
-COPY requirements.txt /app/
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Copy only requirements
+COPY requirements.txt .
 
-#Copying rest of the code
-COPY . /app/
+# pip wheels to only compile no install
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
-#Port 8000 for Django
+# STAGE 2 : Runner
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Lightweight lib for postgresql
+RUN apt-get update \
+    && apt-get install -y libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy built packages from builder
+COPY --from=builder /app/wheels /wheels
+COPY --from=builder /app/requirements.txt .
+
+# Install from .whl files
+RUN pip install --no-cache /wheels/*
+
+# Copy rest of the code
+COPY . .
+
 EXPOSE 8000
 
-#Command to run django app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
