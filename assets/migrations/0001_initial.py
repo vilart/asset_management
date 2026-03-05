@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,35 +14,98 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='DeviceModel',
+            name="DeviceModel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('manufacturer', models.CharField(max_length=100)),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("manufacturer", models.CharField(max_length=100)),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='PurchaseOrder',
+            name="PurchaseOrder",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.CharField(max_length=100, unique=True)),
-                ('supplier', models.CharField(max_length=150)),
-                ('order_date', models.DateField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("number", models.CharField(max_length=100, unique=True)),
+                ("supplier", models.CharField(max_length=150)),
+                ("order_date", models.DateField()),
             ],
         ),
         migrations.CreateModel(
-            name='Asset',
+            name="Asset",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('serial_number', models.CharField(max_length=100, unique=True)),
-                ('name', models.CharField(max_length=150)),
-                ('creation_date', models.DateTimeField(auto_now_add=True)),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
-                ('status', models.CharField(choices=[('NEW', 'New'), ('ACTIVE', 'Active'), ('IN_STOCK', 'In stock'), ('IN_REPAIR', 'In repair'), ('SOLD', 'Sold'), ('SCRAPPED', 'Scrapped')], default='NEW', max_length=20)),
-                ('additional_info', models.TextField(blank=True, null=True)),
-                ('assigned_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assets', to=settings.AUTH_USER_MODEL)),
-                ('device_model', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='assets', to='assets.devicemodel')),
-                ('purchase_order', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assets', to='assets.purchaseorder')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("serial_number", models.CharField(max_length=100, unique=True)),
+                ("name", models.CharField(max_length=150)),
+                ("creation_date", models.DateTimeField(auto_now_add=True)),
+                ("ip_address", models.GenericIPAddressField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("NEW", "New"),
+                            ("ACTIVE", "Active"),
+                            ("IN_STOCK", "In stock"),
+                            ("IN_REPAIR", "In repair"),
+                            ("SOLD", "Sold"),
+                            ("SCRAPPED", "Scrapped"),
+                        ],
+                        default="NEW",
+                        max_length=20,
+                    ),
+                ),
+                ("additional_info", models.TextField(blank=True, null=True)),
+                (
+                    "assigned_user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assets",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "device_model",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="assets",
+                        to="assets.devicemodel",
+                    ),
+                ),
+                (
+                    "purchase_order",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="assets",
+                        to="assets.purchaseorder",
+                    ),
+                ),
             ],
         ),
     ]
