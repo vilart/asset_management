@@ -23,11 +23,17 @@ jobs:
         echo "DB_HOST=db" >> .env
         echo "DB_PORT=5432" >> .env
 
-    - name: 3. Run docker compose for db and web images
+    - name: 3. Linting and formatting code
+      run: |
+        pip install ruff
+        ruff check .
+        ruff format --check .
+        
+    - name: 4. Run docker compose for db and web images
       run: docker compose up -d --build
 
-    - name: 4. Delay for postgres run
+    - name: 5. Delay for postgres run
       run: sleep 10
 
-    - name: 5. Running tests
+    - name: 6. Running tests
       run: docker compose exec -T web python manage.py test
