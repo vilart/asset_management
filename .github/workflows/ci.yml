@@ -32,8 +32,5 @@ jobs:
     - name: 4. Run docker compose for db and web images
       run: docker compose up -d --build
 
-    - name: 5. Delay for postgres run
-      run: sleep 10
-
-    - name: 6. Running tests
+    - name: 5. Running tests
       run: docker compose exec -T web python manage.py test
