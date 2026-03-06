@@ -25,6 +25,9 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
+# Adding nonroot user for security
+RUN addgroup --system appgroup && adduser --system --group appuser
+
 # Lightweight lib for postgresql
 RUN apt-get update \
     && apt-get install -y libpq5 \
@@ -40,6 +43,16 @@ RUN pip install --no-cache /wheels/*
 # Copy rest of the code
 COPY . .
 
+# Collect static files
+RUN SECRET_KEY="dummy" DB_HOST="dummy" DB_NAME="dummy" DB_USER="dummy" DB_PASSWORD="dummy" DB_PORT="dummy" python manage.py collectstatic --noinput
+
+# Change owner of directory app to new user
+RUN chown -R appuser:appgroup /app
+
+# Change user from root
+USER appuser
+
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "asset_management.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
