@@ -8,7 +8,7 @@ WORKDIR /app
 
 # GCC and postgresql related libs
 RUN apt-get update \
-    && apt-get install -y gcc libpq-dev \
+    && apt-get install -y --no-install-recommends gcc libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy only requirements
@@ -49,10 +49,10 @@ RUN SECRET_KEY="dummy" \
     DB_USER="dummy" \
     DB_PASSWORD="dummy" \
     DB_PORT="dummy" \
-    python manage.py collectstatic --noinput
+    python manage.py collectstatic --noinput \
+    && chown -R appuser:appgroup /app
 
 # Change owner of directory app to new user
-RUN chown -R appuser:appgroup /app
 
 # Change user from root
 USER appuser
