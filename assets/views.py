@@ -5,6 +5,7 @@ from .forms import AssetForm, DeviceModelForm
 from django.views.decorators.http import require_GET, require_http_methods
 # Create your views here.
 
+
 @require_GET
 def asset_list(request):
     search_query = request.GET.get("search", "")
@@ -37,6 +38,7 @@ def asset_list(request):
     context = {"assets": assets, "current_sort": sort_by}
     return render(request, "assets/asset_list.html", context)
 
+
 @require_http_methods(["GET", "POST"])
 def asset_create(request):
     if request.method == "POST":
@@ -47,6 +49,7 @@ def asset_create(request):
     else:
         form = AssetForm()
     return render(request, "assets/asset_form.html", {"form": form})
+
 
 @require_http_methods(["GET", "POST"])
 def add_device_model_htmx(request):
@@ -69,6 +72,7 @@ def add_device_model_htmx(request):
         form = DeviceModelForm()
     return render(request, "assets/partials/device_model_form.html", {"form": form})
 
+
 @require_http_methods(["GET", "POST"])
 def asset_update(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
@@ -82,6 +86,7 @@ def asset_update(request, pk):
         form = AssetForm(instance=asset)
 
     return render(request, "assets/asset_form.html", {"form": form, "asset": asset})
+
 
 @require_http_methods(["GET", "POST"])
 def asset_delete(request, pk):
