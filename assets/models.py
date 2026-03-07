@@ -52,7 +52,7 @@ class Asset(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW)
-    additional_info = models.TextField(blank=True, null=True)
+    additional_info = models.TextField(blank=True)
 
     history = HistoricalRecords()
 

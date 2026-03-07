@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: 1. Checkout from repo
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: 2. Generating .env file
       run: |
@@ -35,7 +37,9 @@ jobs:
     - name: 5. Running tests
       run: | 
         docker compose exec -T --user root web coverage run manage.py test
-        docker compose exec -T --user root web coverage xml    
+        docker compose exec -T --user root web coverage xml
+        # Fix SonarCloud warning - not visible app path
+        sed -i "s|<source>/app</source>|<source>${GITHUB_WORKSPACE}</source>|g" coverage.xml
     - name: 6. Code analysis in SonarCloud
       uses: SonarSource/sonarqube-scan-action@9598b8a83feef37de07f549027fab50ecffe6a6e
       env:
