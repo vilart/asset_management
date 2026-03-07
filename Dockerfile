@@ -1,5 +1,5 @@
 # STAGE 1 : Builder
-FROM python:3.12-slim as builder
+FROM python:3.12-slim AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -25,12 +25,11 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Adding nonroot user for security
-RUN addgroup --system appgroup && adduser --system --group appuser
-
-# Lightweight lib for postgresql
-RUN apt-get update \
-    && apt-get install -y libpq5 \
+# Adding nonroot user for security Lightweight lib for postgresql
+RUN addgroup --system appgroup \
+    && adduser --system --group appuser \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built packages from builder
@@ -44,7 +43,13 @@ RUN pip install --no-cache /wheels/*
 COPY . .
 
 # Collect static files
-RUN SECRET_KEY="dummy" DB_HOST="dummy" DB_NAME="dummy" DB_USER="dummy" DB_PASSWORD="dummy" DB_PORT="dummy" python manage.py collectstatic --noinput
+RUN SECRET_KEY="dummy" \
+    DB_HOST="dummy" \
+    DB_NAME="dummy" \
+    DB_USER="dummy" \
+    DB_PASSWORD="dummy" \
+    DB_PORT="dummy" \
+    python manage.py collectstatic --noinput
 
 # Change owner of directory app to new user
 RUN chown -R appuser:appgroup /app

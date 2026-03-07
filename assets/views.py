@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import Asset, DeviceModel
 from .forms import AssetForm, DeviceModelForm
+from django.views.decorators.http import require_GET, require_http_methods
 # Create your views here.
 
 
+@require_GET
 def asset_list(request):
     search_query = request.GET.get("search", "")
     sort_by = request.GET.get("sort", "name")
@@ -37,6 +39,7 @@ def asset_list(request):
     return render(request, "assets/asset_list.html", context)
 
 
+@require_http_methods(["GET", "POST"])
 def asset_create(request):
     if request.method == "POST":
         form = AssetForm(request.POST)
@@ -48,6 +51,7 @@ def asset_create(request):
     return render(request, "assets/asset_form.html", {"form": form})
 
 
+@require_http_methods(["GET", "POST"])
 def add_device_model_htmx(request):
     if request.method == "POST":
         form = DeviceModelForm(request.POST)
@@ -69,6 +73,7 @@ def add_device_model_htmx(request):
     return render(request, "assets/partials/device_model_form.html", {"form": form})
 
 
+@require_http_methods(["GET", "POST"])
 def asset_update(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
 
@@ -83,6 +88,7 @@ def asset_update(request, pk):
     return render(request, "assets/asset_form.html", {"form": form, "asset": asset})
 
 
+@require_http_methods(["GET", "POST"])
 def asset_delete(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
 
