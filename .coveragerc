@@ -1,0 +1,6 @@
+[run]
+omit =
+    */migrations/*
+    manage.py
+    config/asgi.py
+    config/wsgi.py
