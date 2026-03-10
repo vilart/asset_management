@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.test import TestCase
 from django.urls import reverse
 from .models import Asset, DeviceModel, PurchaseOrder
+from django.contrib.auth.models import User
 
 # Create your tests here.
 
@@ -30,6 +31,8 @@ class ModelsTests(TestCase):
 
 class AssetCRUDTests(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username="test", password="test")
+        self.client.force_login(self.user)
         self.device_model = DeviceModel.objects.create(
             manufacturer="Dell", name="Latitude 5520"
         )
