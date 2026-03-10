@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from .models import Asset, DeviceModel
-from .forms import AssetForm, DeviceModelForm
+from .models import Asset, DeviceModel, PurchaseOrder
+from .forms import AssetForm, DeviceModelForm, PurchaseOrderForm
 from django.views.decorators.http import require_GET, require_http_methods
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -39,6 +40,7 @@ def asset_list(request):
     return render(request, "assets/asset_list.html", context)
 
 
+@login_required
 @require_http_methods(["GET", "POST"])
 def asset_create(request):
     if request.method == "POST":
@@ -51,6 +53,7 @@ def asset_create(request):
     return render(request, "assets/asset_form.html", {"form": form})
 
 
+@login_required
 @require_http_methods(["GET", "POST"])
 def add_device_model_htmx(request):
     if request.method == "POST":
@@ -73,6 +76,30 @@ def add_device_model_htmx(request):
     return render(request, "assets/partials/device_model_form.html", {"form": form})
 
 
+@login_required
+@require_http_methods(["GET", "POST"])
+def add_purchase_order_htmx(request):
+    if request.method == "POST":
+        form = PurchaseOrderForm(request.POST)
+        if form.is_valid():
+            new_purchase = form.save()
+
+            purchases = PurchaseOrder.objects.all()
+
+            html = '<option value ="">---------</option>'
+            for p in purchases:
+                selected = "selected" if p.id == new_purchase.id else ""
+                html += f'<option value="{p.id}" {selected}>{p.number} {p.supplier}</option>'
+
+            response = HttpResponse(html)
+            response["HX-Trigger"] = "closeModal"
+            return response
+    else:
+        form = PurchaseOrderForm()
+    return render(request, "assets/partials/purchase_order_form.html", {"form": form})
+
+
+@login_required
 @require_http_methods(["GET", "POST"])
 def asset_update(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
@@ -88,6 +115,7 @@ def asset_update(request, pk):
     return render(request, "assets/asset_form.html", {"form": form, "asset": asset})
 
 
+@login_required
 @require_http_methods(["GET", "POST"])
 def asset_delete(request, pk):
     asset = get_object_or_404(Asset, pk=pk)

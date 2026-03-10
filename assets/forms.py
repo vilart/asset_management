@@ -1,5 +1,5 @@
 from django import forms
-from .models import Asset, DeviceModel
+from .models import Asset, DeviceModel, PurchaseOrder
 
 
 class AssetForm(forms.ModelForm):
@@ -34,4 +34,17 @@ class DeviceModelForm(forms.ModelForm):
         widgets = {
             "manufacturer": forms.TextInput(attrs={"class": "form-control"}),
             "name": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+class PurchaseOrderForm(forms.ModelForm):
+    class Meta:
+        model = PurchaseOrder
+        fields = ["number", "supplier", "order_date"]
+        widgets = {
+            "number": forms.TextInput(attrs={"class": "form-control"}),
+            "supplier": forms.TextInput(attrs={"class": "form-control"}),
+            "order_date": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
         }
