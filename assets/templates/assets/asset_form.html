@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 1000px;">
+<div class="container" style="max-width: 1200px;">
     <h2 class="mb-4">{% if asset %}Edycja sprzętu: {{ asset.name }}{% else %}Dodaj nowy sprzęt IT{% endif %}</h2>
     
     <form method="POST" class="card p-4 shadow-sm position-relative">
@@ -47,6 +47,53 @@
             <button type="submit" class="btn btn-primary">{% if asset %}Zapisz Zmiany{% else %}Zapisz Sprzęt{% endif %}</button>
         </div>
     </form>
+</div>
+
+<div class="container" style="max-width: 1200px;">
+    <div class="mt-5">
+    <h3>Historia zmian</h3>
+    <table class="table table-striped border">
+        <thead class="table-dark">
+            <tr>
+                <th>Data 📅</th>
+                <th>Użytkownik 👤</th>
+                <th>Akcja 🛠️</th>
+                <th>Status (wtedy) 📋</th>
+                <th>Zmiany 🔍</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h.history_date|date:"d.m.Y H:i" }}</td>
+                <td>{{ h.history_user|default:"System" }}</td>
+                <td>
+                    {% if h.history_type == '+' %}
+                        <span class="badge bg-success">Utworzono</span>
+                    {% elif h.history_type == '~' %}
+                        <span class="badge bg-warning text-dark">Edytowano</span>
+                    {% else %}
+                        <span class="badge bg-danger">Usunięto</span>
+                    {% endif %}
+                </td>
+                <td>{{ h.get_status_display }}</td>
+                <td>
+                    {% if not forloop.last %}
+                        {# Tutaj można by dodać porównanie z poprzednią wersją #}
+                        <small class="text-muted">Wpis nr {{ h.history_id }}</small>
+                    {% else %}
+                        <small class="text-muted">Wpis początkowy</small>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Brak zarejestrowanej historii.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
 </div>
 
 <div id="modal" class="modal fade" tabindex="-1" aria-hidden="true">

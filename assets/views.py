@@ -103,6 +103,7 @@ def add_purchase_order_htmx(request):
 @require_http_methods(["GET", "POST"])
 def asset_update(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
+    history = asset.history.all()
 
     if request.method == "POST":
         form = AssetForm(request.POST, instance=asset)
@@ -112,7 +113,11 @@ def asset_update(request, pk):
     else:
         form = AssetForm(instance=asset)
 
-    return render(request, "assets/asset_form.html", {"form": form, "asset": asset})
+    return render(
+        request,
+        "assets/asset_form.html",
+        {"form": form, "asset": asset, "history": history},
+    )
 
 
 @login_required
