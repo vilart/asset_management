@@ -7,6 +7,11 @@ urlpatterns = [
     path(
         "add-device-model/", views.add_device_model_htmx, name="add_device_model_htmx"
     ),
+    path(
+        "add-purchase-order/",
+        views.add_purchase_order_htmx,
+        name="add_purchase_order_htmx",
+    ),
     path("<int:pk>/edit/", views.asset_update, name="asset_update"),
     path("<int:pk>/delete/", views.asset_delete, name="asset_delete"),
 ]

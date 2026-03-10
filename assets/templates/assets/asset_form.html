@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 800px;">
+<div class="container" style="max-width: 1000px;">
     <h2 class="mb-4">{% if asset %}Edycja sprzętu: {{ asset.name }}{% else %}Dodaj nowy sprzęt IT{% endif %}</h2>
     
     <form method="POST" class="card p-4 shadow-sm position-relative">
@@ -27,6 +27,13 @@
                         {{ field }}
                         <button type="button" class="btn btn-outline-success" hx-get="{% url 'add_device_model_htmx' %}" hx-target="#dialog" data-bs-toggle="modal" data-bs-target="#modal">
                             + Dodaj Model
+                        </button>
+                    </div>
+                {% elif field.name == 'purchase_order' %}
+                    <div class="input-group">
+                        {{ field }}
+                        <button type="button" class="btn btn-outline-success" hx-get="{% url 'add_purchase_order_htmx' %}" hx-target="#dialog" data-bs-toggle="modal" data-bs-target="#modal">
+                            + Dodaj Zamówienie
                         </button>
                     </div>
                 {% else %}
