@@ -31,7 +31,7 @@ class ModelsTests(TestCase):
 
 class AssetCRUDTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="test", password="test")
+        self.user = User.objects.create_user(username="test")
         self.client.force_login(self.user)
         self.device_model = DeviceModel.objects.create(
             manufacturer="Dell", name="Latitude 5520"
