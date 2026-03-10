@@ -14,8 +14,13 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    
+    - name: 2. Check with gitleaks
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: 2. Generating .env file
+    - name: 3. Generating .env file
       run: |
         echo "SECRET_KEY=super-secret-test-key-123" > .env
         echo "DEBUG=True" >> .env
@@ -25,16 +30,16 @@ jobs:
         echo "DB_HOST=db" >> .env
         echo "DB_PORT=5432" >> .env
 
-    - name: 3. Linting and formatting code
+    - name: 4. Linting and formatting code
       run: |
         pip install ruff
         ruff check .
         ruff format --check .
         
-    - name: 4. Run docker compose for db and web images
+    - name: 5. Run docker compose for db and web images
       run: docker compose up -d --build
 
-    - name: 5. Running tests
+    - name: 6. Running tests
       run: | 
         docker compose exec -T --user root web coverage run manage.py test
         docker compose exec -T --user root web coverage xml
