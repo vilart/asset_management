@@ -166,3 +166,24 @@ class AssetCRUDTests(TestCase):
         self.assertEqual(response["HX-Trigger"], "closeModal")
         # Sprawdzamy czy w zwróconym HTMLu jest nowy sprzęt
         self.assertContains(response, "Lenovo ThinkPad T14")
+
+    def test_add_purchase_order_htmx_get(self):
+        """Testuje ładowanie modala HTMX (GET)."""
+        response = self.client.get(reverse("add_purchase_order_htmx"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "assets/partials/purchase_order_form.html")
+
+    def test_add_purchase_order_htmx_post(self):
+        """Testuje poprawne zapisanie modelu przez HTMX (POST)."""
+        form_data = {
+            "number": "PO-123",
+            "supplier": "Amazon",
+            "order_date": "2026-03-03",
+        }
+        response = self.client.post(reverse("add_purchase_order_htmx"), data=form_data)
+
+        self.assertEqual(response.status_code, 200)
+        # Sprawdzamy czy widok zwraca nagłówek dla HTMX zamykający modal
+        self.assertEqual(response["HX-Trigger"], "closeModal")
+        # Sprawdzamy czy w zwróconym HTMLu jest nowe zamówienie
+        self.assertContains(response, "PO-123 Amazon")
