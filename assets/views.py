@@ -104,7 +104,44 @@ def add_purchase_order_htmx(request):
 def asset_update(request, pk):
     asset = get_object_or_404(Asset, pk=pk)
     history = asset.history.all()
+    for h in history:
+        if h.prev_record:
+            zmiany = h.diff_against(h.prev_record).changes
+            przetworzone_zmiany = []
 
+            for zmiana in zmiany:
+                old_val = zmiana.old
+                new_val = zmiana.new
+
+                pole = Asset._meta.get_field(zmiana.field)
+
+                if pole.is_relation:
+                    if old_val is not None:
+                        try:
+                            stary_obiekt = pole.related_model.objects.get(pk=old_val)
+                            old_val = str(stary_obiekt)
+                        except pole.related_model.DoesNotExist:
+                            old_val = f"Usunięto obiekt (ID {old_val})"
+
+                    if new_val is not None:
+                        try:
+                            nowy_obiekt = pole.related_model.objects.get(pk=new_val)
+                            new_val = str(nowy_obiekt)
+                        except pole.related_model.DoesNotExist:
+                            new_val = f"Usunięto obiekt (ID {new_val})"
+                przetworzone_zmiany.append(
+                    {
+                        "ladna_nazwa": Asset._meta.get_field(
+                            zmiana.field
+                        ).verbose_name.title(),
+                        "old": old_val,
+                        "new": new_val,
+                    }
+                )
+
+            h.diff_changes = przetworzone_zmiany
+        else:
+            h.diff_changes = []
     if request.method == "POST":
         form = AssetForm(request.POST, instance=asset)
         if form.is_valid():
